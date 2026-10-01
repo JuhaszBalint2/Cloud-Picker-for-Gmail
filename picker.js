@@ -33,10 +33,10 @@
       openFromExtension: 'Open this page with the extension\'s "Open Google Picker" or "Open Dropbox Chooser" button.',
       noExtension: 'The Cloud Picker extension is not installed or not enabled in this browser.',
       sessionInvalid: 'This picker window has expired. Close it and open the picker again from the extension.',
-      signInRequired: 'Your Google Drive session has expired. Sign in again in the extension, then reopen the picker.',
+      signInRequired: 'Your Google Drive session has expired. Close this window, sign in again in the extension, then open the picker again.',
       loadingGoogle: 'Loading the Google Picker…',
       loadingDropbox: 'Loading the Dropbox Chooser…',
-      loadFailed: 'The picker could not be loaded. Check your connection and try again.',
+      loadFailed: 'The picker could not be loaded. Check your connection, then reload this window (F5).',
       googleReady: 'Choose your files in the Google Picker.',
       dropboxPrompt: 'Choose your files in Dropbox. They are added to your selection in the extension.',
       dropboxButton: 'Choose files from Dropbox',
@@ -53,10 +53,10 @@
       openFromExtension: 'Ezt az oldalt a bővítmény „Google-választó megnyitása” vagy „Dropbox-választó megnyitása” gombjával nyissa meg.',
       noExtension: 'A Cloud Picker bővítmény nincs telepítve vagy nincs engedélyezve ebben a böngészőben.',
       sessionInvalid: 'Ez a választóablak lejárt. Zárja be, és nyissa meg újra a választót a bővítményből.',
-      signInRequired: 'A Google Drive-munkamenet lejárt. Jelentkezzen be újra a bővítményben, majd nyissa meg újra a választót.',
+      signInRequired: 'A Google Drive-munkamenet lejárt. Zárja be ezt az ablakot, jelentkezzen be újra a bővítményben, majd nyissa meg újra a választót.',
       loadingGoogle: 'A Google-választó betöltése…',
       loadingDropbox: 'A Dropbox-választó betöltése…',
-      loadFailed: 'A választót nem sikerült betölteni. Ellenőrizze a kapcsolatot, és próbálja újra.',
+      loadFailed: 'A választót nem sikerült betölteni. Ellenőrizze a kapcsolatot, majd töltse újra az ablakot (F5).',
       googleReady: 'Válassza ki a fájlokat a Google-választóban.',
       dropboxPrompt: 'Válassza ki a fájlokat a Dropboxban. A fájlok a bővítményben a kijelöléshez adódnak.',
       dropboxButton: 'Fájlok kiválasztása a Dropboxból',
@@ -70,13 +70,40 @@
   };
 
   // Read the session, then drop it from the address bar and history at once.
+  // sessionStorage keeps it for a reload (the extension allows a few per
+  // session): it belongs to this one window and is gone when the window closes.
+  const SESSION_STORAGE_KEY = 'cloudPickerSession';
   const params = new URLSearchParams(location.hash.slice(1));
-  const session = params.get('session') || '';
-  const provider = params.get('provider') || '';
+  let session = params.get('session') || '';
+  let provider = params.get('provider') || '';
   try {
-    history.replaceState(null, '', location.pathname);
+    if (session) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ session, provider }));
+    } else {
+      const saved = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY) || 'null');
+      if (saved && typeof saved.session === 'string' && typeof saved.provider === 'string') {
+        session = saved.session;
+        provider = saved.provider;
+      }
+    }
   } catch (_) {
-    // Best effort only.
+    // Storage unavailable: a reload then needs the extension's button again.
+  }
+  if (location.hash) {
+    try {
+      history.replaceState(null, '', location.pathname);
+    } catch (_) {
+      // Best effort only.
+    }
+  }
+
+  /** The session is over; a reload must not try it again. */
+  function forgetSession() {
+    try {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    } catch (_) {
+      // Nothing stored.
+    }
   }
 
   const titleEl = document.getElementById('title');
@@ -160,11 +187,16 @@
       .map((f) => ({ id: f.id, name: typeof f.name === 'string' ? f.name : '' }));
     const answer = await send({ action: 'hostedPickerResult', items });
     if (answer && answer.ok) {
+      forgetSession();
       setStatus('done');
       cancelBtn.textContent = t('close');
       cancelBtn.hidden = false;
+    } else if (answer && answer.error === 'SESSION_INVALID') {
+      forgetSession();
+      fail('sessionInvalid');
     } else {
-      fail(answer && answer.error === 'SESSION_INVALID' ? 'sessionInvalid' : 'sendFailed');
+      // Kept: if the extension never got the files, a reload can pick again.
+      fail('sendFailed');
     }
   }
 
@@ -173,6 +205,7 @@
       finished = true;
       await send({ action: 'hostedPickerCancel' });
     }
+    forgetSession();
     // The extension closes the window itself; this covers the case where it
     // could not be reached. A browser may refuse, which is harmless.
     window.close();
@@ -265,9 +298,12 @@
     }
     if (!config || !config.ok) {
       const error = config && config.error;
-      fail(error === 'NO_EXTENSION' ? 'noExtension'
-        : error === 'SIGN_IN_REQUIRED' ? 'signInRequired'
-        : 'sessionInvalid');
+      if (error === 'NO_EXTENSION') {
+        fail('noExtension');   // kept: a reload works once the extension is back
+      } else {
+        forgetSession();
+        fail(error === 'SIGN_IN_REQUIRED' ? 'signInRequired' : 'sessionInvalid');
+      }
       return;
     }
 
