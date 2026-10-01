@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Cloud Picker for Gmail</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    The hosted half of the "official picker" feature of the Cloud Picker for
+    Gmail browser extension. The extension opens this page in its own window with
+    #session=<nonce>&provider=<googledrive|dropbox>. Opened any other way, it does
+    nothing. It holds no secrets: everything it needs comes from the extension.
+  -->
+  <main class="card" id="app">
+    <h1 id="title">Cloud Picker for Gmail</h1>
+    <p id="status" role="status" aria-live="polite">Connecting to the extension…</p>
+    <div class="actions">
+      <button id="chooseBtn" type="button" class="primary" hidden>Choose files</button>
+      <button id="cancelBtn" type="button" hidden>Cancel</button>
+    </div>
+  </main>
+  <script src="picker.js"></script>
+</body>
+</html>
