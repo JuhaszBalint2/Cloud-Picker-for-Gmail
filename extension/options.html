@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud Picker for Gmail</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1 data-i18n="title">Cloud Picker for Gmail</h1>
+    <p data-i18n="intro"></p>
+
+    <section class="card">
+      <h2 data-i18n="registerTitle"></h2>
+      <p data-i18n="registerIntro"></p>
+      <dl>
+        <dt data-i18n="redirectUri"></dt>
+        <dd><code id="redirectUri"></code></dd>
+        <dt data-i18n="pickerPage"></dt>
+        <dd><code id="pickerPage"></code></dd>
+        <dt data-i18n="pickerOrigin"></dt>
+        <dd><code id="pickerOrigin"></code></dd>
+      </dl>
+    </section>
+
+    <form id="form" autocomplete="off">
+      <section class="card" data-provider="googledrive">
+        <h2>Google Drive <span class="status" data-status></span></h2>
+        <label><span data-i18n="googleClientId"></span>
+          <input name="googleClientId" spellcheck="false" placeholder="1234567890-abc.apps.googleusercontent.com"></label>
+        <label><span data-i18n="googleApiKey"></span>
+          <input name="googleApiKey" spellcheck="false" placeholder="AIza…"></label>
+        <label><span data-i18n="googleAppId"></span>
+          <input name="googleAppId" spellcheck="false" inputmode="numeric" placeholder="1234567890"></label>
+        <p class="hint" data-i18n="googleHint"></p>
+        <div class="row"><button type="button" data-sign-in data-i18n="signIn"></button><button type="button" data-sign-out data-i18n="signOut"></button></div>
+      </section>
+
+      <section class="card" data-provider="dropbox">
+        <h2>Dropbox <span class="status" data-status></span></h2>
+        <label><span data-i18n="dropboxAppKey"></span>
+          <input name="dropboxAppKey" spellcheck="false"></label>
+        <p class="hint" data-i18n="dropboxHint"></p>
+        <div class="row"><button type="button" data-sign-in data-i18n="signIn"></button><button type="button" data-sign-out data-i18n="signOut"></button></div>
+      </section>
+
+      <section class="card" data-provider="onedrive">
+        <h2>OneDrive <span class="status" data-status></span></h2>
+        <label><span data-i18n="msClientId"></span>
+          <input name="msClientId" spellcheck="false" placeholder="00000000-0000-0000-0000-000000000000"></label>
+        <p class="hint" data-i18n="msHint"></p>
+        <div class="row"><button type="button" data-sign-in data-i18n="signIn"></button><button type="button" data-sign-out data-i18n="signOut"></button></div>
+      </section>
+
+      <div class="row save-row">
+        <button type="submit" class="primary" data-i18n="save"></button>
+        <span id="saved" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
