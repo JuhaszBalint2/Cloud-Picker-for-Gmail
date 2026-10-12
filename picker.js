@@ -280,6 +280,8 @@
         const item = { id: f.id, name: typeof f.name === 'string' ? f.name : '' };
         // A OneDrive id is unique only within its drive.
         if (typeof f.driveId === 'string' && f.driveId) item.driveId = f.driveId;
+        // A whole folder, to be expanded by the extension.
+        if (f.isFolder === true) item.isFolder = true;
         return item;
       });
     const answer = await send({ action: 'hostedPickerResult', items });
@@ -703,7 +705,8 @@
       // Present, even empty: this page hands out the tokens. Required in an iframe.
       authentication: {},
       messaging: { origin: location.origin, channelId: msChannelId },
-      typesAndSources: { mode: 'files' },
+      // Files and whole folders: a folder is returned as one item, flagged below.
+      typesAndSources: { mode: 'all' },
       selection: { mode: 'multiple', enablePersistence: true, maximumCount: MS_MAX_ITEMS },
       commands: {
         // The picks must come from the account the extension is connected to.
@@ -905,7 +908,8 @@
           driveId: item && item.parentReference && typeof item.parentReference.driveId === 'string'
             ? item.parentReference.driveId
             : '',
-          name: item && typeof item.name === 'string' ? item.name : ''
+          name: item && typeof item.name === 'string' ? item.name : '',
+          isFolder: !!(item && item.folder && typeof item.folder === 'object')
         })));
         return;
       }
