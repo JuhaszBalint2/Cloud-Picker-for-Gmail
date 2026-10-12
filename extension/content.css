@@ -1,0 +1,117 @@
+/* Cloud Picker for Gmail: the compose button, its menu and the status toast.
+   Every class is prefixed, so nothing here touches Gmail's own elements. */
+
+.cloud-picker-compose-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 2px;
+  border-radius: 50%;
+  color: #444746;
+  cursor: pointer;
+  vertical-align: middle;
+  flex: none;
+}
+
+.cloud-picker-compose-btn:hover,
+.cloud-picker-compose-btn[aria-expanded="true"] {
+  background: rgba(68, 71, 70, 0.08);
+  color: #0b57d0;
+}
+
+.cloud-picker-compose-btn:focus-visible {
+  outline: 2px solid #0b57d0;
+  outline-offset: 1px;
+}
+
+.cloud-picker-cell {
+  padding: 0 4px;
+  vertical-align: middle;
+}
+
+.cloud-picker-menu {
+  position: fixed;
+  z-index: 2147483000;
+  min-width: 200px;
+  padding: 6px 0;
+  background: #fff;
+  color: #1f1f1f;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.3);
+  font: 14px/20px "Google Sans", Roboto, Arial, sans-serif;
+}
+
+.cloud-picker-menu-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  outline: none;
+}
+
+.cloud-picker-menu-item:hover,
+.cloud-picker-menu-item:focus {
+  background: #f2f2f2;
+}
+
+.cloud-picker-menu-note {
+  color: #5f6368;
+  font-size: 12px;
+}
+
+.cloud-picker-menu-separator {
+  height: 1px;
+  margin: 6px 0;
+  background: #e0e0e0;
+}
+
+.cloud-picker-toast {
+  position: fixed;
+  z-index: 2147483000;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(560px, calc(100vw - 48px));
+  padding: 12px 12px 12px 16px;
+  background: #1f1f1f;
+  color: #f2f2f2;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font: 14px/20px "Google Sans", Roboto, Arial, sans-serif;
+}
+
+.cloud-picker-toast[hidden] {
+  display: none;
+}
+
+.cloud-picker-toast-error {
+  background: #8c1d18;
+}
+
+.cloud-picker-toast-text {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.cloud-picker-toast-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.cloud-picker-toast-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}

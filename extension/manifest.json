@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extName__",
+  "description": "__MSG_extDescription__",
+  "version": "1.0.0",
+  "default_locale": "en",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+YhCUSWPrNDWJEAppIJJxR6g8b3bba3g05pZnn1WZFvNQjGKxn9rRQ2GkKwhZdj90Q/XvtJ/O5sq21lmu3csKSTMDYzV6vkSCxeoP8pqL831RnUYXmK+UdfUQiCfBZ12jcin93Reh3HdA9ZAncu0GZgz8nuTgsWaEZJi3vYeRW2xCzepeRtJZXwVzJrKlD0HVlsp8Kh045n1JLVzzkvjeGdjXzpAWV7G7lRm2upwiGFMeEEGLShN9ForX+a5C72tIm3aoVTmtjOUT5rTmKt9dZ16+twp+jcJ7eYajJlgbn6mqnq+J0zZbJBJx31XzftS8X10O7CJ0LP/C2kohNQniwIDAQAB",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["page-hook.js"],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "action": {
+    "default_title": "__MSG_extName__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "permissions": ["identity", "storage"],
+  "host_permissions": [
+    "https://www.googleapis.com/*",
+    "https://graph.microsoft.com/*",
+    "https://*.sharepoint.com/*",
+    "https://*.1drv.com/*",
+    "https://*.microsoftpersonalcontent.com/*",
+    "https://*.livefilestore.com/*",
+    "https://api.dropboxapi.com/*",
+    "https://content.dropboxapi.com/*"
+  ],
+  "externally_connectable": {
+    "matches": ["https://juhaszbalint2.github.io/Cloud-Picker-for-Gmail/*"]
+  }
+}

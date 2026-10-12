@@ -9,13 +9,13 @@
 // from this URL only (externally_connectable in its manifest).
 //
 // What this page can and cannot do:
-//   - It talks to exactly one extension (EXTENSION_ID), and only with the session
-//     nonce the extension put in the URL fragment. Opened any other way, it does
-//     nothing.
+//   - It talks to one extension (from EXTENSION_IDS, named by ext= in the URL
+//     fragment), and only with the session nonce the extension put there.
+//     Opened any other way, it does nothing.
 //   - It holds no secrets. The API key, project number, Dropbox app key and
 //     Microsoft client id are public identifiers. For Google the extension also
-//     hands over a short-lived, read-only Drive access token, used only to show
-//     the Picker. For OneDrive it hands over no token at all: the page signs in
+//     hands over a short-lived Drive access token (drive.file: it reaches only
+//     the files picked here), used only to show the Picker. For OneDrive it hands over no token at all: the page signs in
 //     to Microsoft by itself (see the OneDrive section), and those tokens stay
 //     in this window's memory and go to Microsoft's picker only.
 //   - It sends back file ids and names (for OneDrive, with the drive id), nothing
@@ -24,9 +24,11 @@
 'use strict';
 
 (function () {
-  // Derived from the "key" in the extension's manifest.json; a new key means a
-  // new ID, and this constant must follow it.
-  const EXTENSION_ID = 'hacjgahmjhepekmjdhmpdlfhjkkpdhgf';
+  // The extensions this page answers to, each derived from the "key" in its
+  // manifest.json; a new key means a new ID, and this list must follow it. The
+  // extension names itself in the fragment (ext=); without that, the first.
+  // The second is the extension in this repository's extension/ folder.
+  const EXTENSION_IDS = ['hacjgahmjhepekmjdhmpdlfhjkkpdhgf', 'lpopajldbemheobeghoaphkhkbpcplne'];
   const GOOGLE_API_SRC = 'https://apis.google.com/js/api.js';
   const DROPBOX_DROPINS_SRC = 'https://www.dropbox.com/static/api/2/dropins.js';
   const PROVIDERS = ['googledrive', 'dropbox', 'onedrive'];
@@ -123,6 +125,7 @@
   const params = new URLSearchParams(location.hash.slice(1));
   let session = params.get('session') || '';
   let provider = params.get('provider') || '';
+  let extensionId = params.get('ext') || '';
   // Microsoft's answer to a sign-in started here arrives in the fragment too.
   const msAuthResponse = params.has('code') || params.has('error')
     ? {
@@ -134,17 +137,19 @@
     : null;
   try {
     if (session) {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ session, provider }));
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ session, provider, extensionId }));
     } else {
       const saved = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEY) || 'null');
       if (saved && typeof saved.session === 'string' && typeof saved.provider === 'string') {
         session = saved.session;
         provider = saved.provider;
+        extensionId = typeof saved.extensionId === 'string' ? saved.extensionId : '';
       }
     }
   } catch (_) {
     // Storage unavailable: a reload then needs the extension's button again.
   }
+  if (!EXTENSION_IDS.includes(extensionId)) extensionId = EXTENSION_IDS[0];
   if (location.hash) {
     try {
       history.replaceState(null, '', location.pathname);
@@ -236,7 +241,7 @@
         return;
       }
       try {
-        runtime.sendMessage(EXTENSION_ID, Object.assign({ session }, message), (answer) => {
+        runtime.sendMessage(extensionId, Object.assign({ session }, message), (answer) => {
           if (runtime.lastError) {
             resolve({ ok: false, error: 'NO_EXTENSION' });
             return;

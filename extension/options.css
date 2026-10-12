@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #202124;
+  --muted: #5f6368;
+  --border: #dadce0;
+  --accent: #0b57d0;
+  --accent-text: #ffffff;
+  --ok: #146c2e;
+  --error: #b3261e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f2125;
+    --card: #2a2d33;
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --border: #3c4043;
+    --accent: #8ab4f8;
+    --accent-text: #1f2125;
+    --ok: #81c995;
+    --error: #f2b8b5;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+h1 { font-size: 24px; margin: 0 0 8px; }
+h2 { font-size: 17px; margin: 0 0 12px; display: flex; gap: 12px; align-items: baseline; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+dl { margin: 0; }
+dt { color: var(--muted); font-size: 13px; margin-top: 8px; }
+dd { margin: 2px 0 0; }
+code { font-size: 13px; overflow-wrap: anywhere; user-select: all; }
+
+label { display: block; margin: 0 0 12px; }
+label span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+
+input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+
+.hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+button {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.status { font-size: 13px; font-weight: normal; color: var(--muted); }
+.status.ok { color: var(--ok); }
+.status.error { color: var(--error); }
+
+.save-row { margin-top: 8px; }
+#saved { color: var(--muted); font-size: 14px; }
